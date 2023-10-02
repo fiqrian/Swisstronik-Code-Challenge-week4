@@ -13,8 +13,7 @@ contract PERC20Sample is PERC20 {
     receive() external payable {
         _mint(_msgSender(), msg.value);
     }
-
-    /**
+     /**
      * @dev Regular `balanceOf` function marked as internal, so we override it to extend visibility  
      */ 
     function balanceOf(address account) public view override returns (uint256) {
@@ -22,12 +21,21 @@ contract PERC20Sample is PERC20 {
         // extract original sender of this request. In case of regular (non-signed) `eth_call`
         // msg.sender will be empty address (0x0000000000000000000000000000000000000000).
         require(msg.sender == account, "PERC20Sample: msg.sender != account");
-
+        
         // If msg.sender is correct we return the balance
         return _balances[account];
     }
+        function mint() public {
+        _mint(msg.sender,100*10**18);
+    }
 
-    /**
+     // for transfer function
+    function transfer(address recipient, uint256 amount) public override returns (bool) {
+        _transfer(_msgSender(), recipient, amount);
+        return true;
+    }
+
+  /**
      * @dev Regular `allowance` function marked as internal, so we override it to extend visibility  
      */
     function allowance(address owner, address spender) public view virtual override returns (uint256) {
@@ -39,4 +47,7 @@ contract PERC20Sample is PERC20 {
         // If msg.sender is correct we return the allowance
         return _allowances[owner][spender];
     }
+
+   
 }
+

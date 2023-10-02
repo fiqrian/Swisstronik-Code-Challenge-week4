@@ -1,5 +1,6 @@
 // Import necessary modules from Hardhat and SwisstronikJS
 const hre = require("hardhat");
+require("dotenv").config({ path: ".env" });
 const {
   encryptDataField,
   decryptNodeResponse,
@@ -24,37 +25,28 @@ const sendShieldedTransaction = async (signer, destination, data, value) => {
 
 async function main() {
   // Address of the deployed contract
-  const replace_contractAddress = "0x0000eCB077818DE0d6D18b2722Ef636a4C4694B8";
+  const contractAddress = "0x0000eCB077818DE0d6D18b2722Ef636a4C4694B8";
 
   // Get the signer (your account)
   const [signer] = await hre.ethers.getSigners();
 
   // Create a contract instance
-  const replace_contractFactory = await hre.ethers.getContractFactory(
-    "PERC20Sample"
-  );
-  const contract = replace_contractFactory.attach(replace_contractAddress);
+  const contractFactory = await hre.ethers.getContractFactory("PERC20Sample");
+  const contract = contractFactory.attach(contractAddress);
 
-  // Send a shielded transaction to execute a transaction in the contract
-  const replace_functionName = "transfer";
-  const replace_functionArgs = [
-    "0x16af037878a6cAce2Ea29d39A3757aC2F6F7aac1",
-    "100",
-  ];
-  const transaction = await sendShieldedTransaction(
+  // Send a shielded transaction to mint tokens in the contract
+  const functionName = "mint";
+  const mintTx = await sendShieldedTransaction(
     signer,
-    replace_contractAddress,
-    contract.interface.encodeFunctionData(
-      replace_functionName,
-      replace_functionArgs
-    ),
+    contractAddress,
+    contract.interface.encodeFunctionData(functionName),
     0
   );
 
-  await transaction.wait();
+  await mintTx.wait();
 
-  // It should return a TransactionResponse object
-  console.log("Transaction : ", transaction.hash);
+  // It should return a TransactionReceipt object
+  console.log("Transaction Receipt: ", mintTx);
 }
 
 // Using async/await pattern to handle errors properly
